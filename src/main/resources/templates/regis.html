@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>регистрация</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <style>
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .register-header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+        .register-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+        }
+        .form-actions {
+            margin-top: 1.5rem;
+        }
+        .form-actions button {
+            width: 100%;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .login-link a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .error-text {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+<div class="register-wrapper">
+    <div class="register-container">
+        <div class="register-header">
+            <h1>регистрация</h1>
+        </div>
+        
+        <div class="register-form">
+            <div th:if="${message}" class="alert-minimal danger" th:text="${message}"></div>
+            
+            <form th:action="@{/registration}" th:object="${user}" method="post">
+                <div class="form-group">
+                    <label for="username" class="form-label">логин</label>
+                    <input type="text" class="form-control-minimal" id="username" th:field="*{username}" required>
+                    <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-text"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">пароль</label>
+                    <input type="password" class="form-control-minimal" id="password" th:field="*{password}" required>
+                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-text"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">email</label>
+                    <input type="email" class="form-control-minimal" id="email" th:field="*{email}" required>
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-text"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullName" class="form-label">полное имя</label>
+                    <input type="text" class="form-control-minimal" id="fullName" th:field="*{fullName}" required>
+                    <div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="error-text"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-minimal primary">зарегистрироваться</button>
+                </div>
+            </form>
+            
+            <div class="login-link">
+                уже есть аккаунт? <a href="/login">войти</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>вход</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .login-header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+        .login-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+        }
+        .form-actions {
+            margin-top: 2rem;
+        }
+        .form-actions button {
+            width: 100%;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .register-link a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>figurines</h1>
+        </div>
+        
+        <div class="login-form">
+            <div th:if="${param.error}" class="alert-minimal danger">
+                неверный логин или пароль
+            </div>
+            <div th:if="${param.logout}" class="alert-minimal success">
+                выход выполнен
+            </div>
+            
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username" class="form-label">логин</label>
+                    <input type="text" class="form-control-minimal" id="username" name="username" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">пароль</label>
+                    <input type="password" class="form-control-minimal" id="password" name="password" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-minimal primary">войти</button>
+                </div>
+            </form>
+            
+            <div class="register-link">
+                нет аккаунта? <a href="/registration">регистрация</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

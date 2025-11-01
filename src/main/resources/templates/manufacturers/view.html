@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${manufacturer.name}">производитель</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title" th:text="${manufacturer.name}"></h1>
+    
+    <div class="card-minimal">
+        <div class="card-minimal-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <div th:if="${manufacturer.description != null}">
+                    <div class="form-label">описание</div>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${manufacturer.description}"></p>
+                </div>
+                <div>
+                    <div class="form-label">страна</div>
+                    <div style="margin-top: 0.5rem;" th:text="${manufacturer.country}"></div>
+                </div>
+                <div>
+                    <div class="form-label">email</div>
+                    <div style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${manufacturer.email}"></div>
+                </div>
+                <div th:if="${manufacturer.phone != null}">
+                    <div class="form-label">телефон</div>
+                    <div style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${manufacturer.phone}"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div th:if="${hasManagerRole || hasAdminRole}">
+                    <a th:href="@{/manufacturers/{id}/edit(id=${manufacturer.id})}" class="btn-minimal">изменить</a>
+                    <span th:if="${hasAdminRole}">
+                        <form th:action="@{/manufacturers/{id}/delete(id=${manufacturer.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn-minimal danger" style="margin-left: 0.5rem;">удалить</button>
+                        </form>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/manufacturers" class="btn-minimal">← назад к списку</a>
+    </div>
+</div>
+</body>
+</html>

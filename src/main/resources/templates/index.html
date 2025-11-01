@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>figurines</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">figurines</h1>
+    <p class="page-subtitle">коллекционные фигурки</p>
+
+    <div th:if="${products != null and !products.empty}">
+        <div class="products-grid">
+            <div class="product-card" th:each="product : ${products}">
+                <h3 class="product-card-title" th:text="${product.name}"></h3>
+                <p class="card-minimal-body" th:text="${product.description}"></p>
+                <div class="product-card-price" th:text="${product.price + ' ₽'}"></div>
+                <div class="product-card-actions">
+                    <a th:href="@{/products/{id}(id=${product.id})}" class="btn-minimal small">подробнее</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:if="${products == null or products.empty}" class="empty-state">
+        <p class="empty-state-title">товары отсутствуют</p>
+    </div>
+</div>
+</body>
+</html>

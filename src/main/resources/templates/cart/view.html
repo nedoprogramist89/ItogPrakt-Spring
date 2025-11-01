@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>корзина</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">корзина</h1>
+    
+    <div th:if="${cartItems != null and !cartItems.empty}">
+        <table class="table-minimal">
+            <thead>
+            <tr>
+                <th>товар</th>
+                <th>цена</th>
+                <th>количество</th>
+                <th>сумма</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cartItems}">
+                <td>
+                    <a th:href="@{/products/{id}(id=${item.product.id})}" style="color: var(--text-primary); text-decoration: none;" th:text="${item.product.name}"></a>
+                </td>
+                <td th:text="${item.product.price + ' ₽'}"></td>
+                <td>
+                    <form th:action="@{/cart/{id}/update(id=${item.id})}" method="post" style="display: inline-flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control-minimal" style="width: 70px;">
+                        <button type="submit" class="btn-minimal small">обновить</button>
+                    </form>
+                </td>
+                <td th:text="${itemTotals[item.id] + ' ₽'}"></td>
+                <td style="text-align: right;">
+                    <form th:action="@{/cart/{id}/delete(id=${item.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-minimal small danger">удалить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3" style="text-align: right; font-weight: 500;">итого:</td>
+                <td style="font-weight: 500; font-size: 18px;" th:text="${total + ' ₽'}"></td>
+                <td></td>
+            </tr>
+            </tfoot>
+        </table>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: space-between;">
+            <div>
+                <form th:action="@{/cart/clear}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-minimal danger">очистить корзину</button>
+                </form>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/products" class="btn-minimal">продолжить покупки</a>
+                <a href="/cart/checkout" class="btn-minimal primary">оформить заказ</a>
+            </div>
+        </div>
+    </div>
+    
+    <div th:if="${cartItems == null or cartItems.empty}" class="empty-state">
+        <p class="empty-state-title">корзина пуста</p>
+        <p class="empty-state-text">добавьте товары для оформления заказа</p>
+        <div style="margin-top: 1.5rem;">
+            <a href="/products" class="btn-minimal primary">перейти к товарам</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

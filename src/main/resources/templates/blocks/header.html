@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar-minimal">
+    <div class="nav-container">
+        <a href="/" class="logo">figurines</a>
+        <ul class="nav-links">
+            <li><a href="/">главная</a></li>
+            <li><a href="/products">товары</a></li>
+            <li><a href="/categories">категории</a></li>
+            <li><a href="/manufacturers">производители</a></li>
+            <li><a href="/reviews">отзывы</a></li>
+            <li th:if="${isRegularUser}"><a href="/cart">корзина</a></li>
+            <li th:if="${isRegularUser}"><a href="/addresses">адреса</a></li>
+            <li th:if="${isRegularUser}"><a href="/orders">заказы</a></li>
+            <li th:if="${hasManagerRole || hasAdminRole}"><a href="/orders">управление</a></li>
+            <li th:if="${hasManagerRole || hasAdminRole}"><a href="/payments">платежи</a></li>
+            <li th:if="${hasAdminRole}"><a href="/admin/users">админ</a></li>
+        </ul>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-btn">выход</button>
+        </form>
+    </div>
+</nav>

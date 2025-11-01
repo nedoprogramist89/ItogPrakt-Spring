@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>заказ</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title" th:text="'заказ #' + ${order.id}"></h1>
+    <p class="page-subtitle" th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}"></p>
+    
+    <div class="card-minimal">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <div class="form-label">статус</div>
+                <div style="margin-top: 0.5rem;">
+                    <span class="badge-minimal" 
+                          th:classappend="${order.status.name() == 'DELIVERED'} ? 'success' : 
+                                         (${order.status.name() == 'CANCELLED'} ? 'danger' : 
+                                         (${order.status.name() == 'SHIPPED'} ? 'info' : ''))"
+                          th:text="${order.status.displayName}"></span>
+                </div>
+            </div>
+            <div>
+                <div class="form-label">сумма</div>
+                <div style="margin-top: 0.5rem; font-size: 20px; font-weight: 500;" th:text="${order.totalAmount + ' ₽'}"></div>
+            </div>
+            <div>
+                <div class="form-label">адрес доставки</div>
+                <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                    <span th:text="${order.shippingAddress.city + ', ' + order.shippingAddress.street + ', д. ' + order.shippingAddress.house}"></span>
+                    <span th:if="${order.shippingAddress.apartment != null and order.shippingAddress.apartment != ''}">
+                        , кв. <span th:text="${order.shippingAddress.apartment}"></span>
+                    </span>
+                </div>
+            </div>
+            <div th:if="${order.deliveryDate != null}">
+                <div class="form-label">дата доставки</div>
+                <div style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${#temporals.format(order.deliveryDate, 'dd.MM.yyyy')}"></div>
+            </div>
+        </div>
+        
+        <div th:if="${order.comment != null and order.comment != ''}" style="margin-bottom: 2rem;">
+            <div class="form-label">комментарий</div>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${order.comment}"></p>
+        </div>
+        
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
+            <div class="form-label" style="margin-bottom: 1rem;">товары</div>
+            <table class="table-minimal" style="margin-top: 0;">
+                <thead>
+                <tr>
+                    <th>название</th>
+                    <th>количество</th>
+                    <th>цена</th>
+                    <th>сумма</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${order.orderItems == null or order.orderItems.isEmpty()}">
+                    <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">нет товаров в заказе</td>
+                </tr>
+                <tr th:each="item : ${order.orderItems}" th:if="${order.orderItems != null and !order.orderItems.isEmpty()}">
+                    <td>
+                        <a th:if="${item.product != null and item.product.id != null}" 
+                           th:href="@{/products/{id}(id=${item.product.id})}" 
+                           style="color: var(--text-primary); text-decoration: none;" 
+                           th:text="${item.product.name != null ? item.product.name : 'товар удален'}"></a>
+                        <span th:if="${item.product == null or item.product.id == null}" style="color: var(--text-secondary);">товар удален</span>
+                    </td>
+                    <td th:text="${item.quantity != null ? item.quantity : 0}"></td>
+                    <td th:text="${item.price != null ? (item.price + ' ₽') : '0 ₽'}"></td>
+                    <td style="font-weight: 500;" th:text="${item.price != null and item.quantity != null ? (#numbers.formatDecimal(item.price * item.quantity, 1, 2) + ' ₽') : '0 ₽'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div th:if="${payment != null}" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <div class="form-label" style="margin-bottom: 1rem;">платеж</div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <a th:href="@{/payments/{id}(id=${payment.id})}" style="color: var(--text-primary); text-decoration: none; font-weight: 500;">
+                        платеж #<span th:text="${payment.id}"></span>
+                    </a>
+                    <span class="badge-minimal" style="margin-left: 1rem;"
+                          th:classappend="${payment.status.name() == 'COMPLETED'} ? 'success' : 
+                                         (${payment.status.name() == 'PENDING'} ? 'warning' : 
+                                         (${payment.status.name() == 'FAILED'} ? 'danger' : 'info'))"
+                          th:text="${payment.status}"></span>
+                </div>
+                <a th:href="@{/payments/{id}(id=${payment.id})}" class="btn-minimal small">открыть</a>
+            </div>
+        </div>
+
+        <div th:if="${payment == null and isRegularUser}" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <div class="form-label" style="margin-bottom: 1rem;">платеж</div>
+            <a th:href="@{/payments/order/{id}/create(id=${order.id})}" class="btn-minimal primary">оплатить заказ</a>
+        </div>
+
+        <div th:if="${hasManagerRole || hasAdminRole}" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <div class="form-label" style="margin-bottom: 1rem;">изменить статус</div>
+            <form th:action="@{/orders/{id}/update-status(id=${order.id})}" method="post" style="display: flex; gap: 1rem; align-items: center;">
+                <select name="status" class="form-control-minimal" style="width: auto; min-width: 200px;">
+                    <option th:each="status : ${T(com.example.springmodels.models.Order$OrderStatus).values()}" 
+                            th:value="${status}" 
+                            th:text="${status.displayName}"
+                            th:selected="${order.status == status}"></option>
+                </select>
+                <button type="submit" class="btn-minimal primary">обновить</button>
+            </form>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/orders" class="btn-minimal">← назад к списку</a>
+    </div>
+</div>
+</body>
+</html>

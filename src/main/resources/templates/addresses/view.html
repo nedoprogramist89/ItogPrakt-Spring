@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>адрес доставки</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">адрес доставки</h1>
+    <p class="page-subtitle">просмотр адреса</p>
+
+    <div class="card-minimal">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <div class="form-label">город</div>
+                <div style="margin-top: 0.5rem; font-size: 18px; font-weight: 500;" th:text="${address.city}"></div>
+            </div>
+            <div>
+                <div class="form-label">улица</div>
+                <div style="margin-top: 0.5rem;" th:text="${address.street}"></div>
+            </div>
+            <div>
+                <div class="form-label">дом</div>
+                <div style="margin-top: 0.5rem;" th:text="${address.house}"></div>
+            </div>
+            <div th:if="${address.apartment != null and address.apartment != ''}">
+                <div class="form-label">квартира</div>
+                <div style="margin-top: 0.5rem;" th:text="${address.apartment}"></div>
+            </div>
+            <div th:if="${address.postalCode != null and address.postalCode != ''}">
+                <div class="form-label">почтовый индекс</div>
+                <div style="margin-top: 0.5rem;" th:text="${address.postalCode}"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <a th:href="@{/addresses/{id}/edit(id=${address.id})}" class="btn-minimal">изменить</a>
+            <form th:action="@{/addresses/{id}/delete(id=${address.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn-minimal danger">удалить</button>
+            </form>
+            <a href="/addresses" class="btn-minimal">← назад к списку</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>редактировать отзыв</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">редактировать отзыв</h1>
+    <p class="page-subtitle" th:text="'для товара: ' + ${review.product.name}"></p>
+
+    <div class="card-minimal">
+        <form th:action="@{/reviews/{id}/edit(id=${review.id})}" th:object="${review}" method="post">
+            <input type="hidden" th:field="*{product.id}"/>
+            
+            <div class="form-group">
+                <label for="rating" class="form-label">рейтинг</label>
+                <select id="rating" th:field="*{rating}" class="form-control-minimal" required>
+                    <option value="1">1 - очень плохо</option>
+                    <option value="2">2 - плохо</option>
+                    <option value="3">3 - удовлетворительно</option>
+                    <option value="4">4 - хорошо</option>
+                    <option value="5">5 - отлично</option>
+                </select>
+                <div th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}" class="error-text"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment" class="form-label">комментарий</label>
+                <textarea id="comment" th:field="*{comment}" class="form-control-minimal" rows="5"></textarea>
+                <div th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="error-text"></div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-minimal primary">сохранить</button>
+                <a th:href="@{/products/{id}(id=${review.product.id})}" class="btn-minimal">отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+

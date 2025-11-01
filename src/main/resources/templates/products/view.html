@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name}">товар</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title" th:text="${product.name}"></h1>
+    <p class="page-subtitle" th:text="${product.category.name + ' · ' + product.manufacturer.name}"></p>
+    
+    <div class="card-minimal">
+        <div class="card-minimal-body">
+            <div style="margin-bottom: 2rem;">
+                <div style="font-size: 24px; font-weight: 400; margin-bottom: 0.5rem;" th:text="${product.price + ' ₽'}"></div>
+                <div style="color: var(--text-secondary); font-size: 13px;" th:text="'на складе: ' + ${product.quantity}"></div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <div class="form-label">описание</div>
+                <p style="margin-top: 0.5rem;" th:text="${product.description}"></p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div th:if="${product.size != null}">
+                    <div class="form-label">размер</div>
+                    <div th:text="${product.size}"></div>
+                </div>
+                <div th:if="${product.material != null}">
+                    <div class="form-label">материал</div>
+                    <div th:text="${product.material}"></div>
+                </div>
+                <div>
+                    <div class="form-label">категория</div>
+                    <div th:text="${product.category.name}"></div>
+                </div>
+                <div>
+                    <div class="form-label">производитель</div>
+                    <div th:text="${product.manufacturer.name}"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div th:if="${hasManagerRole || hasAdminRole}">
+                    <a th:href="@{/products/{id}/edit(id=${product.id})}" class="btn-minimal">изменить</a>
+                    <span th:if="${hasAdminRole}">
+                        <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn-minimal danger" style="margin-left: 0.5rem;">удалить</button>
+                        </form>
+                    </span>
+                </div>
+                
+                <div th:if="${isRegularUser}">
+                    <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" style="display:inline;">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" name="quantity" value="1" min="1" class="form-control-minimal" style="width: 80px;">
+                            <button type="submit" class="btn-minimal primary">в корзину</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 20px; font-weight: 400;">отзывы</h2>
+            <div>
+                <a th:href="@{/reviews/product/{id}(id=${product.id})}" class="btn-minimal small">все отзывы</a>
+                <a th:if="${isRegularUser}" th:href="@{/reviews/create/product/{id}(id=${product.id})}" 
+                   class="btn-minimal small primary" style="margin-left: 0.5rem;">оставить отзыв</a>
+            </div>
+        </div>
+        
+        <div th:if="${product.reviews != null and !product.reviews.empty}">
+            <div th:each="review : ${product.reviews}" class="card-minimal" style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;" th:text="${review.user.fullName}"></div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <span class="badge-minimal" th:text="${review.rating + ' / 5'}"
+                                  th:classappend="${review.rating >= 4} ? 'success' : (${review.rating >= 3} ? 'warning' : 'danger')"></span>
+                            <span style="color: var(--text-secondary); font-size: 12px;" 
+                                  th:text="${#temporals.format(review.reviewDate, 'dd.MM.yyyy')}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${review.comment != null and review.comment != ''}" 
+                     style="color: var(--text-secondary);" th:text="${review.comment}"></div>
+            </div>
+        </div>
+        
+        <div th:if="${product.reviews == null or product.reviews.empty}" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <p>пока нет отзывов</p>
+            <a th:if="${isRegularUser}" th:href="@{/reviews/create/product/{id}(id=${product.id})}" 
+               class="btn-minimal small" style="margin-top: 1rem;">стать первым</a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/products" class="btn-minimal">← назад к списку</a>
+    </div>
+</div>
+</body>
+</html>

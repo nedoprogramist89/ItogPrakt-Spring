@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>платежи</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">платежи</h1>
+    <p class="page-subtitle">все платежи в системе</p>
+
+    <div th:if="${payments != null and !payments.empty}">
+        <table class="table-minimal">
+            <thead>
+            <tr>
+                <th>заказ</th>
+                <th>пользователь</th>
+                <th>сумма</th>
+                <th>метод</th>
+                <th>статус</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="payment : ${payments}">
+                <td>
+                    <a th:href="@{/orders/{id}(id=${payment.order.id})}" style="color: var(--text-primary); text-decoration: none;">
+                        заказ #<span th:text="${payment.order.id}"></span>
+                    </a>
+                </td>
+                <td th:text="${payment.order.user.fullName}"></td>
+                <td th:text="${payment.amount + ' ₽'}"></td>
+                <td th:text="${payment.paymentMethod.displayName}"></td>
+                <td>
+                    <span class="badge-minimal" 
+                          th:classappend="${payment.status.name() == 'COMPLETED'} ? 'success' : 
+                                         (${payment.status.name() == 'PENDING'} ? 'warning' : 
+                                         (${payment.status.name() == 'FAILED'} ? 'danger' : 'info'))"
+                          th:text="${payment.status}"></span>
+                </td>
+                <td style="text-align: right;">
+                    <a th:href="@{/payments/{id}(id=${payment.id})}" class="btn-minimal small">открыть</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div th:if="${payments == null or payments.empty}" class="empty-state">
+        <p class="empty-state-title">платежи отсутствуют</p>
+    </div>
+</div>
+</body>
+</html>
+

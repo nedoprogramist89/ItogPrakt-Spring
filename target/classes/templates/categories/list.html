@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>категории</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+        <div>
+            <h1 class="page-title">категории</h1>
+            <p class="page-subtitle">группы товаров</p>
+        </div>
+        <a th:if="${hasManagerRole || hasAdminRole}" href="/categories/create" class="btn-minimal primary">добавить</a>
+    </div>
+
+    <table class="table-minimal">
+        <thead>
+        <tr>
+            <th>название</th>
+            <th>описание</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}">
+            <td><a th:href="@{/categories/{id}(id=${category.id})}" style="color: var(--text-primary); text-decoration: none;" th:text="${category.name}"></a></td>
+            <td style="color: var(--text-secondary);" th:text="${category.description}"></td>
+            <td style="text-align: right;">
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <a th:href="@{/categories/{id}(id=${category.id})}" class="btn-minimal small">открыть</a>
+                    <span th:if="${hasManagerRole || hasAdminRole}">
+                        <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn-minimal small">изменить</a>
+                        <span th:if="${hasAdminRole}">
+                            <form th:action="@{/categories/{id}/delete(id=${category.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn-minimal small danger">удалить</button>
+                            </form>
+                        </span>
+                    </span>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    
+    <div th:if="${categories == null or categories.empty}" class="empty-state">
+        <p class="empty-state-title">категории отсутствуют</p>
+    </div>
+</div>
+</body>
+</html>

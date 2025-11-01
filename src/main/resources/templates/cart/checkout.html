@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>оформление заказа</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">оформление заказа</h1>
+    <p class="page-subtitle">подтверждение покупки</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem;" class="checkout-layout">
+        <!-- Форма адреса -->
+        <div class="card-minimal">
+            <div th:if="${errorMessage != null}" class="alert-minimal danger" style="margin-bottom: 1.5rem;" th:text="${errorMessage}"></div>
+            
+            <form th:action="@{/cart/checkout}" method="post">
+                <div class="form-label" style="margin-bottom: 1rem;">адрес доставки</div>
+                
+                <div class="form-group">
+                    <label for="city" class="form-label">город</label>
+                    <input type="text" id="city" name="city" class="form-control-minimal" required maxlength="100" placeholder="Москва">
+                </div>
+                
+                <div class="form-group">
+                    <label for="street" class="form-label">улица</label>
+                    <input type="text" id="street" name="street" class="form-control-minimal" required maxlength="200" placeholder="ул. Примерная">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="house" class="form-label">дом</label>
+                        <input type="text" id="house" name="house" class="form-control-minimal" required maxlength="20" placeholder="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apartment" class="form-label">квартира (необязательно)</label>
+                        <input type="text" id="apartment" name="apartment" class="form-control-minimal" maxlength="20" placeholder="25">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="postalCode" class="form-label">почтовый индекс (необязательно)</label>
+                    <input type="text" id="postalCode" name="postalCode" class="form-control-minimal" maxlength="10" placeholder="123456">
+                </div>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label for="comment" class="form-label">комментарий (необязательно)</label>
+                    <textarea id="comment" name="comment" class="form-control-minimal" rows="3" maxlength="500" placeholder="Дополнительные пожелания к заказу"></textarea>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 0.5rem;">
+                        <span id="charCount">0</span> / 500 символов
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn-minimal primary">подтвердить заказ</button>
+                    <a href="/cart" class="btn-minimal">вернуться в корзину</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Итого -->
+        <div class="card-minimal" style="height: fit-content;">
+            <div class="form-label" style="margin-bottom: 1rem;">состав заказа</div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <div th:each="item : ${cartItems}" style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;" th:text="${item.product.name}"></div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 0.25rem;">
+                                <span th:text="${item.product.price + ' ₽'}"></span> × <span th:text="${item.quantity}"></span>
+                            </div>
+                        </div>
+                        <div style="font-weight: 500; margin-left: 1rem;" th:text="${item.product.price * item.quantity + ' ₽'}"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="border-top: 2px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: 500; font-size: 18px;">итого:</div>
+                    <div style="font-weight: 500; font-size: 24px;" th:text="${total + ' ₽'}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const textarea = document.getElementById('comment');
+    const charCount = document.getElementById('charCount');
+    
+    if (textarea && charCount) {
+        textarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+</script>
+</body>
+</html>
+

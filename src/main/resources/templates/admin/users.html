@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>управление пользователями</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">пользователи</h1>
+    <p class="page-subtitle">управление аккаунтами</p>
+
+    <table class="table-minimal">
+        <thead>
+        <tr>
+            <th>логин</th>
+            <th>email</th>
+            <th>имя</th>
+            <th>статус</th>
+            <th>роли</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${user_list}">
+            <td style="font-weight: 500;" th:text="${user.username}"></td>
+            <td style="color: var(--text-secondary);" th:text="${user.email}"></td>
+            <td th:text="${user.fullName}"></td>
+            <td>
+                <span class="badge-minimal" th:classappend="${user.active} ? 'success' : 'danger'" th:text="${user.active} ? 'активен' : 'неактивен'"></span>
+            </td>
+            <td>
+                <span th:each="role : ${user.roles}" class="badge-minimal" style="margin-right: 0.25rem;" th:text="${role}"></span>
+            </td>
+            <td style="text-align: right;">
+                <a th:href="@{/admin/{id}(id=${user.idUser})}" class="btn-minimal small">открыть</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/" class="btn-minimal">← главная</a>
+    </div>
+</div>
+</body>
+</html>

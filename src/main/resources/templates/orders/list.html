@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>заказы</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+        <div>
+            <h1 class="page-title" th:text="${isManagerOrAdmin} ? 'управление заказами' : 'мои заказы'"></h1>
+            <p class="page-subtitle">история покупок</p>
+        </div>
+        <a th:if="${isRegularUser}" href="/orders/create" class="btn-minimal primary">новый заказ</a>
+    </div>
+
+    <div th:if="${orders != null and !orders.empty}">
+        <table class="table-minimal">
+            <thead>
+            <tr>
+                <th>номер</th>
+                <th th:if="${isManagerOrAdmin}">покупатель</th>
+                <th>дата</th>
+                <th>статус</th>
+                <th>сумма</th>
+                <th>адрес</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td style="font-weight: 500;" th:text="'#' + ${order.id}"></td>
+                <td th:if="${isManagerOrAdmin}" style="color: var(--text-secondary);" th:text="${order.user.fullName + ' (' + order.user.email + ')'}"></td>
+                <td style="color: var(--text-secondary); font-size: 13px;" th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy')}"></td>
+                <td>
+                    <span class="badge-minimal" 
+                          th:classappend="${order.status.name() == 'DELIVERED'} ? 'success' : 
+                                         (${order.status.name() == 'CANCELLED'} ? 'danger' : 
+                                         (${order.status.name() == 'SHIPPED'} ? 'info' : ''))"
+                          th:text="${order.status}"></span>
+                </td>
+                <td style="font-weight: 500;" th:text="${order.totalAmount + ' ₽'}"></td>
+                <td style="color: var(--text-secondary); font-size: 13px;" th:text="${order.shippingAddress.city + ', ' + order.shippingAddress.street}"></td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn-minimal small">открыть</a>
+                        <span th:if="${hasAdminRole}">
+                            <form th:action="@{/orders/{id}/delete(id=${order.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn-minimal small danger">удалить</button>
+                            </form>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div th:if="${orders == null or orders.empty}" class="empty-state">
+        <p class="empty-state-title">заказы отсутствуют</p>
+    </div>
+</div>
+</body>
+</html>

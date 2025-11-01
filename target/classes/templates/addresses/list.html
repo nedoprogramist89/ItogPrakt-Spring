@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>адреса доставки</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+        <div>
+            <h1 class="page-title">адреса доставки</h1>
+            <p class="page-subtitle">мои адреса</p>
+        </div>
+        <a href="/addresses/create" class="btn-minimal primary">добавить адрес</a>
+    </div>
+
+    <div th:if="${addresses != null and !addresses.empty}">
+        <div th:each="address : ${addresses}" class="card-minimal" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <div style="font-weight: 500; margin-bottom: 0.5rem; font-size: 18px;">
+                        <span th:text="${address.city}"></span>, 
+                        <span th:text="${address.street}"></span>, 
+                        <span th:text="'д. ' + ${address.house}"></span>
+                        <span th:if="${address.apartment != null and address.apartment != ''}" 
+                              th:text="', кв. ' + ${address.apartment}"></span>
+                    </div>
+                    <div th:if="${address.postalCode != null and address.postalCode != ''}" 
+                         style="color: var(--text-secondary); font-size: 13px;"
+                         th:text="'почтовый индекс: ' + ${address.postalCode}"></div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a th:href="@{/addresses/{id}(id=${address.id})}" class="btn-minimal small">открыть</a>
+                    <a th:href="@{/addresses/{id}/edit(id=${address.id})}" class="btn-minimal small">изменить</a>
+                    <form th:action="@{/addresses/{id}/delete(id=${address.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-minimal small danger">удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:if="${addresses == null or addresses.empty}" class="empty-state">
+        <p class="empty-state-title">адреса отсутствуют</p>
+        <p class="empty-state-text">добавьте адрес доставки для оформления заказов</p>
+        <div style="margin-top: 1.5rem;">
+            <a href="/addresses/create" class="btn-minimal primary">добавить адрес</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

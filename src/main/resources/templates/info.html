@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Информация о пользователе</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+<div class="container mt-4">
+    <h2>Информация о пользователе</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3 th:text="${'Пользователь: ' + user_object.username}"></h3>
+            <hr>
+            <p><strong>Email:</strong> <span th:text="${user_object.email}"></span></p>
+            <p><strong>Полное имя:</strong> <span th:text="${user_object.fullName}"></span></p>
+            <p><strong>Статус:</strong> 
+                <span th:if="${user_object.active}" class="badge bg-success">Активен</span>
+                <span th:unless="${user_object.active}" class="badge bg-danger">Неактивен</span>
+            </p>
+            <p><strong>Роли:</strong> 
+                <span th:each="role : ${user_object.roles}" class="badge bg-primary me-1" th:text="${role}"></span>
+            </p>
+            <div class="mt-3">
+                <a th:href="@{/admin/{id}/update(id=${user_object.idUser})}" class="btn btn-warning">Редактировать</a>
+                <a href="/admin/users" class="btn btn-secondary">Назад к списку</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

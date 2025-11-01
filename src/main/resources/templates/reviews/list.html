@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>отзывы</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title">отзывы</h1>
+    <p class="page-subtitle">все отзывы пользователей</p>
+
+    <div th:if="${reviews != null and !reviews.empty}">
+        <table class="table-minimal">
+            <thead>
+            <tr>
+                <th>товар</th>
+                <th>пользователь</th>
+                <th>рейтинг</th>
+                <th>комментарий</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="review : ${reviews}">
+                <td>
+                    <a th:href="@{/products/{id}(id=${review.product.id})}" style="color: var(--text-primary); text-decoration: none;" th:text="${review.product.name}"></a>
+                </td>
+                <td th:text="${review.user.fullName}"></td>
+                <td>
+                    <span class="badge-minimal" th:text="${review.rating + ' / 5'}"
+                          th:classappend="${review.rating >= 4} ? 'success' : (${review.rating >= 3} ? 'warning' : 'danger')"></span>
+                </td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                    th:text="${review.comment}"></td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <a th:href="@{/reviews/{id}/edit(id=${review.id})}" class="btn-minimal small" 
+                           th:if="${isRegularUser or hasAdminRole}">изменить</a>
+                        <form th:action="@{/reviews/{id}/delete(id=${review.id})}" method="post" style="display:inline;"
+                              th:if="${isRegularUser or hasAdminRole}">
+                            <button type="submit" class="btn-minimal small danger">удалить</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div th:if="${reviews == null or reviews.empty}" class="empty-state">
+        <p class="empty-state-title">отзывы отсутствуют</p>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/products" class="btn-minimal">← к товарам</a>
+    </div>
+</div>
+</body>
+</html>
+

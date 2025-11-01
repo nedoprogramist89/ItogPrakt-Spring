@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>платеж</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="blocks/header"></div>
+
+<div class="main-content">
+    <h1 class="page-title" th:text="'платеж #' + ${payment.id}"></h1>
+    <p class="page-subtitle" th:text="'для заказа #' + ${payment.order.id}"></p>
+
+    <div class="card-minimal">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <div class="form-label">заказ</div>
+                <div style="margin-top: 0.5rem;">
+                    <a th:href="@{/orders/{id}(id=${payment.order.id})}" style="color: var(--text-primary); text-decoration: none;"
+                       th:text="'заказ #' + ${payment.order.id}"></a>
+                </div>
+            </div>
+            <div>
+                <div class="form-label">сумма</div>
+                <div style="margin-top: 0.5rem; font-size: 20px; font-weight: 500;" th:text="${payment.amount + ' ₽'}"></div>
+            </div>
+            <div>
+                <div class="form-label">метод оплаты</div>
+                <div style="margin-top: 0.5rem;" th:text="${payment.paymentMethod.displayName}"></div>
+            </div>
+            <div>
+                <div class="form-label">статус</div>
+                <div style="margin-top: 0.5rem;">
+                    <span class="badge-minimal" 
+                          th:classappend="${payment.status.name() == 'COMPLETED'} ? 'success' : 
+                                         (${payment.status.name() == 'PENDING'} ? 'warning' : 
+                                         (${payment.status.name() == 'FAILED'} ? 'danger' : 'info'))"
+                          th:text="${payment.status}"></span>
+                </div>
+            </div>
+            <div th:if="${payment.paymentDate != null}">
+                <div class="form-label">дата платежа</div>
+                <div style="margin-top: 0.5rem; color: var(--text-secondary);" 
+                     th:text="${#temporals.format(payment.paymentDate, 'dd.MM.yyyy HH:mm')}"></div>
+            </div>
+        </div>
+
+        <div th:if="${payment.paymentDetails != null and payment.paymentDetails != ''}" style="margin-bottom: 2rem;">
+            <div class="form-label">детали платежа</div>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary);" th:text="${payment.paymentDetails}"></p>
+        </div>
+
+        <div th:if="${hasManagerRole || hasAdminRole}" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <div class="form-label" style="margin-bottom: 1rem;">изменить статус</div>
+            <form th:action="@{/payments/{id}/update-status(id=${payment.id})}" method="post" style="display: flex; gap: 1rem; align-items: center;">
+                <select name="status" class="form-control-minimal" style="width: auto; min-width: 200px;">
+                    <option th:each="status : ${T(com.example.springmodels.models.Payment$PaymentStatus).values()}" 
+                            th:value="${status}" 
+                            th:text="${status}"
+                            th:selected="${payment.status == status}"></option>
+                </select>
+                <button type="submit" class="btn-minimal primary">обновить</button>
+            </form>
+        </div>
+
+        <div th:if="${hasAdminRole}" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <form th:action="@{/payments/{id}/delete(id=${payment.id})}" method="post">
+                <button type="submit" class="btn-minimal danger">удалить платеж</button>
+            </form>
+        </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <a href="/payments" class="btn-minimal">← назад к списку</a>
+        <a th:href="@{/orders/{id}(id=${payment.order.id})}" class="btn-minimal" style="margin-left: 1rem;">к заказу</a>
+    </div>
+</div>
+</body>
+</html>
+
